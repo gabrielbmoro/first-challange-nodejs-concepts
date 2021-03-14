@@ -5,7 +5,7 @@ class CheckExistsUserUC {
     const username = request.header("username");
     const isUserAlreadyExists = UsersRepository.isUserAlreadyExists(username);
     if (!isUserAlreadyExists) {
-      return response.status(404);
+      return response.status(404).json({ error: "The user doesn't exist" });
     }
     return next();
   }

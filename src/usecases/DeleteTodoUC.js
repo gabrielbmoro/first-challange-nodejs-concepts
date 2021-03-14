@@ -6,7 +6,7 @@ class DeleteTodoUC {
     const username = request.header("username");
 
     if (!UsersRepository.isTodoAlreadyExists(username, todoId)) {
-      return response.status(404);
+      return response.status(404).json({ error: "Todo doesn't exist" });
     }
 
     UsersRepository.delete(todoId, username);

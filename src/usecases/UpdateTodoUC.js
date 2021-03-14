@@ -6,7 +6,7 @@ class UpdateTodoUC {
     const todoId = request.params.id;
 
     if (!UsersRepository.isTodoAlreadyExists(username, todoId)) {
-      return response.status(404);
+      return response.status(404).json({ error: "Todo doesn't exist" });
     }
 
     const { title, deadline } = request.body;
