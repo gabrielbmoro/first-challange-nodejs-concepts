@@ -1,123 +1,31 @@
 const express = require("express");
 const cors = require("cors");
 
-const { v4: uuidv4 } = require("uuid");
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const users = [];
+// use cases
+const createNewTodo = require("./usecases/CreateNewTodoUC").execute;
+const checkExistsUserUC = require("./usecases/CheckExistsUserUC").execute;
+const getAllTodos = require("./usecases/GetAllTodosUC").execute;
+const createNewUser = require("./usecases/CreateNewUserUC").execute;
+const updateTodo = require("./usecases/UpdateTodoUC").execute;
+const markAsDone = require("./usecases/MarkAsDoneUC").execute;
+const deleteTodo = require("./usecases/DeleteTodoUC").execute;
 
-function getUserFromHeader(request) {
-  const userName = request.header("username");
-  return users.filter((user) => {
-    return user.userName == userName;
-  })[0];
-}
+// routes
+app.post("/users", createNewUser);
 
-function checksExistsUserAccount(request, response, next) {
-  const user = getUserFromHeader(request);
-  if (!user) {
-    next(Error("User does not exist!"));
-  }
-  next();
-}
+app.get("/todos", checkExistsUserUC, getAllTodos);
 
-app.post("/users", (request, response) => {
-  const { name, username } = request.body;
+app.post("/todos", checkExistsUserUC, createNewTodo);
 
-  const newUser = {
-    id: uuidv4(),
-    name: name,
-    userName: username,
-    todos: [],
-  };
+app.put("/todos/:id", checkExistsUserUC, updateTodo);
 
-  users.push(newUser);
+app.patch("/todos/:id/done", checkExistsUserUC, markAsDone);
 
-  response.json(newUser);
-});
-
-app.get("/todos", checksExistsUserAccount, (request, response) => {
-  const user = getUserFromHeader(request);
-  response.json(user.todos);
-});
-
-app.post("/todos", checksExistsUserAccount, (request, response) => {
-  const { title, deadline } = request.body;
-  const user = getUserFromHeader(request);
-
-  const newTodo = {
-    id: uuidv4(),
-    title: title,
-    deadline: new Date(deadline), // deadline year-month-day
-    done: false,
-    created_at: new Date(),
-  };
-  user.todos.push(newTodo);
-
-  response.json(newTodo);
-});
-
-app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
-  const { title, deadline } = request.body;
-  const id = request.params.id;
-
-  const user = getUserFromHeader(request);
-  let todoIndex = -1;
-  const todoTarget = user.todos.filter((todo) => {
-    todoIndex++;
-    return todo.id == id;
-  })[0];
-
-  if (!todoTarget) {
-    throw Error("An invalid id");
-  }
-
-  todoTarget.title = title;
-  todoTarget.deadline = new Date(deadline);
-
-  const userIndex = users.indexOf(user);
-  users[userIndex].todos[todoIndex] = todoTarget;
-
-  response.json(users[userIndex].todos[todoIndex]);
-});
-
-app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
-  const id = request.params.id;
-
-  const user = getUserFromHeader(request);
-  let todoIndex = -1;
-  const todoTarget = user.todos.filter((todo) => {
-    todoIndex++;
-    return todo.id == id;
-  })[0];
-
-  if (!todoTarget) {
-    throw Error("An invalid id");
-  }
-
-  todoTarget.done = true;
-
-  const userIndex = users.indexOf(user);
-  users[userIndex].todos[todoIndex] = todoTarget;
-
-  response.json(users[userIndex].todos[todoIndex]);
-});
-
-app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
-  const id = request.params.id;
-
-  const user = getUserFromHeader(request);
-  const userIndex = users.indexOf(user);
-
-  users[userIndex].todos = user.todos.filter((todo) => {
-    return todo.id != id;
-  });
-
-  response.json(users[userIndex].todos);
-});
+app.delete("/todos/:id", checkExistsUserUC, deleteTodo);
 
 module.exports = app;
