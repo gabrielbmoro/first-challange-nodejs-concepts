@@ -86,7 +86,25 @@ app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
 });
 
 app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const id = request.params.id;
+
+  const user = getUserFromHeader(request);
+  let todoIndex = -1;
+  const todoTarget = user.todos.filter((todo) => {
+    todoIndex++;
+    return todo.id == id;
+  })[0];
+
+  if (!todoTarget) {
+    throw Error("An invalid id");
+  }
+
+  todoTarget.done = true;
+
+  const userIndex = users.indexOf(user);
+  users[userIndex].todos[todoIndex] = todoTarget;
+
+  response.json(users[userIndex].todos[todoIndex]);
 });
 
 app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
