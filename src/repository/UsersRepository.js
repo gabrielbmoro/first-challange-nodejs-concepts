@@ -25,6 +25,11 @@ class UsersRepository {
     return -1;
   }
 
+  getTodo(username, todoId) {
+    const user = this.getUser(username);
+    return user.todos.filter((todo) => todo.id == todoId)[0]
+  }
+
   getUser(username) {
     const userIndex = this._getUserIndex(username);
     return this._users[userIndex];
@@ -66,9 +71,17 @@ class UsersRepository {
     return this._users[userIndex].todos[todoIndex];
   }
 
+  isTodoAlreadyExists(username, todoId) {
+    const userIndex = this._getUserIndex(username);
+    const todoIndex = this._getTodoIndex(this._users[userIndex], todoId);
+    return this._users[userIndex].todos[todoIndex];
+  }
+
   delete(todoId, username) {
     const userIndex = this._getUserIndex(username);
-    this._users[userIndex].todos = this._users[userIndex].todos.filter((todo) => todo.id != todoId);
+    this._users[userIndex].todos = this._users[userIndex].todos.filter(
+      (todo) => todo.id != todoId
+    );
   }
 }
 

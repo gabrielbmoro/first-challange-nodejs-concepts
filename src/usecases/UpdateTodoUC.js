@@ -1,11 +1,15 @@
 const UsersRepository = require("../repository/UsersRepository");
 
 class UpdateTodoUC {
-  async execute(request, response) {
+  execute(request, response) {
     const username = request.header("username");
-    const { title, deadline } = request.body;
     const todoId = request.params.id;
 
+    if (!UsersRepository.isTodoAlreadyExists(username, todoId)) {
+      return response.status(404);
+    }
+
+    const { title, deadline } = request.body;
     const updatedTodo = UsersRepository.updateTodo(
       username,
       todoId,
@@ -13,7 +17,7 @@ class UpdateTodoUC {
       deadline
     );
 
-    response.json(updatedTodo)
+    response.json(updatedTodo);
   }
 }
 

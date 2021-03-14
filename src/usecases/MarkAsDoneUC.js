@@ -1,14 +1,20 @@
 const UsersRepository = require("../repository/UsersRepository");
 
 class MarkAsDoneUC {
-  async execute(request, response) {
+  execute(request, response) {
     const todoId = request.params.id;
 
     const username = request.header("username");
     
+    if (!UsersRepository.isTodoAlreadyExists(username, todoId)) {
+      return response.status(404);
+    }
+
     UsersRepository.markTodoAsDone(username, todoId);
 
-    return response.json(UsersRepository.getAllTodos(username));
+    const todo = UsersRepository.getTodo(username, todoId);
+
+    return response.json(todo);
   }
 }
 

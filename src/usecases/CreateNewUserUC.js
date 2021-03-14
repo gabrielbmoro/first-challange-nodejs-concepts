@@ -2,7 +2,7 @@ const UsersRepository = require("../repository/UsersRepository");
 const { v4: uuidv4 } = require("uuid");
 
 class CreateNewUserUC {
-  async execute(request, response) {
+  execute(request, response) {
     const { name, username } = request.body;
 
     const newUser = {
@@ -18,7 +18,7 @@ class CreateNewUserUC {
 
     UsersRepository.add(newUser);
 
-    return response.json(newUser).status(201);
+    return response.status(201).json(newUser);
   }
 }
 
