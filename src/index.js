@@ -8,24 +8,46 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// const users = [];
+const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const userName = request.header("username");
+  const usersWithTheSameUserName = users.filter((user) => {
+    return user.userName == userName;
+  });
+
+  const userNotExists = usersWithTheSameUserName.length == 0;
+
+  if (userNotExists) {
+    next(Error("User does not exist!"));
+  }
+
+  next();
 }
 
 app.post("/users", (request, response) => {
   const { name, username } = request.body;
-  response.json({
+
+  const newUser = {
     id: uuidv4(),
     name: name,
-    username: username,
+    userName: username,
     todos: [],
-  });
+  };
+
+  users.push(newUser);
+
+  response.json(newUser);
 });
 
 app.get("/todos", checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const userName = request.header("username");
+
+  const user = users.filter((user) => {
+    return user.userName == userName;
+  })[0];
+
+  response.json(user.todos);
 });
 
 app.post("/todos", checksExistsUserAccount, (request, response) => {
