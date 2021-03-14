@@ -41,7 +41,7 @@ class UsersRepository {
   }
 
   isUserAlreadyExists(username) {
-    return this.getUser(username);
+    return this._getUserIndex(username) != -1
   }
 
   add(user) {

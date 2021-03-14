@@ -13,7 +13,7 @@ class CreateNewUserUC {
     };
 
     if (UsersRepository.isUserAlreadyExists(username)) {
-      return response.status(400);
+      return response.status(400).json({ error: "User already exists" });
     }
 
     UsersRepository.add(newUser);
