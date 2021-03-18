@@ -3,7 +3,7 @@ const UsersRepository = require("../repository/UsersRepository");
 class DeleteTodoUC {
   execute(request, response) {
     const todoId = request.params.id;
-    const username = request.header("username");
+    const { username } = request.headers;
 
     if (!UsersRepository.isTodoAlreadyExists(username, todoId)) {
       return response.status(404).json({ error: "Todo doesn't exist" });

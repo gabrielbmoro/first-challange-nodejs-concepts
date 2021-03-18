@@ -2,7 +2,7 @@ const UsersRepository = require("../repository/UsersRepository");
 
 class UpdateTodoUC {
   execute(request, response) {
-    const username = request.header("username");
+    const { username } = request.headers;
     const todoId = request.params.id;
 
     if (!UsersRepository.isTodoAlreadyExists(username, todoId)) {

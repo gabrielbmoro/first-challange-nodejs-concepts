@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 class CreateNewTodoUC {
   execute(request, response) {
     const { title, deadline } = request.body;
-    const username = request.header("username");
+    const { username } = request.headers;
 
     const newTodo = {
       id: uuidv4(),
