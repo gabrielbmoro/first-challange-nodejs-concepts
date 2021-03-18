@@ -13,21 +13,9 @@ class UsersRepository {
     return -1;
   }
 
-  _getTodoIndex(user, todoId) {
-    const amountOfTodos = user.todos.length;
-    let i = 0;
-    while (i < amountOfTodos) {
-      if (user.todos[i].id == todoId) {
-        return i;
-      }
-      i++;
-    }
-    return -1;
-  }
-
   getTodo(username, todoId) {
     const user = this.getUser(username);
-    return user.todos.filter((todo) => todo.id == todoId)[0]
+    return user.todos.filter((todo) => todo.id == todoId)[0];
   }
 
   getUser(username) {
@@ -41,7 +29,7 @@ class UsersRepository {
   }
 
   isUserAlreadyExists(username) {
-    return this._getUserIndex(username) != -1
+    return this._getUserIndex(username) != -1;
   }
 
   add(user) {
@@ -49,10 +37,8 @@ class UsersRepository {
   }
 
   markTodoAsDone(username, todoId) {
-    const userIndex = this._getUserIndex(username);
-    const user = this._users[userIndex];
-    const todoIndex = this._getTodoIndex(user, todoId);
-    this._users[userIndex].todos[todoIndex].done = true;
+    const todo = this.getTodo(username, todoId);
+    todo.done = true;
   }
 
   addNewTodo(username, newTodo) {
@@ -61,20 +47,20 @@ class UsersRepository {
   }
 
   updateTodo(username, todoId, title, deadline) {
-    const userIndex = this._getUserIndex(username);
+    const todo = this.getTodo(username, todoId);
 
-    const user = this._users[userIndex];
-    const todoIndex = this._getTodoIndex(user, todoId);
-
-    this._users[userIndex].todos[todoIndex].title = title;
-    this._users[userIndex].todos[todoIndex].deadline = deadline;
-    return this._users[userIndex].todos[todoIndex];
+    todo.title = title;
+    todo.deadline = deadline;
+    return todo;
   }
 
   isTodoAlreadyExists(username, todoId) {
-    const userIndex = this._getUserIndex(username);
-    const todoIndex = this._getTodoIndex(this._users[userIndex], todoId);
-    return this._users[userIndex].todos[todoIndex];
+    const todo = this.getTodo(username, todoId);
+    if (todo) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   delete(todoId, username) {
