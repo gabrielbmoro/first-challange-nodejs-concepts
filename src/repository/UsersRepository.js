@@ -1,26 +1,14 @@
 class UsersRepository {
   _users = [];
 
-  _getUserIndex(username) {
-    const amountOfUsers = this._users.length;
-    let i = 0;
-    while (i < amountOfUsers) {
-      if (this._users[i].username == username) {
-        return i;
-      }
-      i++;
-    }
-    return -1;
-  }
-
   getTodo(username, todoId) {
     const user = this.getUser(username);
     return user.todos.filter((todo) => todo.id == todoId)[0];
   }
 
   getUser(username) {
-    const userIndex = this._getUserIndex(username);
-    return this._users[userIndex];
+    const user = this._users.find((user) => user.username === username);
+    return user;
   }
 
   getAllTodos(username) {
@@ -29,7 +17,11 @@ class UsersRepository {
   }
 
   isUserAlreadyExists(username) {
-    return this._getUserIndex(username) != -1;
+    if (this.getUser(username)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   add(user) {
@@ -42,8 +34,8 @@ class UsersRepository {
   }
 
   addNewTodo(username, newTodo) {
-    const userIndex = this._getUserIndex(username);
-    this._users[userIndex].todos.push(newTodo);
+    const user = this.getUser(username);
+    user.todos.push(newTodo);
   }
 
   updateTodo(username, todoId, title, deadline) {
@@ -64,10 +56,8 @@ class UsersRepository {
   }
 
   delete(todoId, username) {
-    const userIndex = this._getUserIndex(username);
-    this._users[userIndex].todos = this._users[userIndex].todos.filter(
-      (todo) => todo.id != todoId
-    );
+    const user = this.getUser(username);
+    user.todos = user.todos.filter((todo) => todo.id != todoId);
   }
 }
 
